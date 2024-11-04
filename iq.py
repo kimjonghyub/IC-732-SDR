@@ -575,6 +575,7 @@ while True:
     if opt.control == "si570":
         msg = "%.3f kHz" % (mysi570.getFreqByValue() * 1000.) # freq/4 from Si570
     elif opt.hamlib:
+        msg = "-----"  #fail link cat
         rigfreq1 = str(rigfreq)
         length = len(rigfreq1)
         if length >= 9:
