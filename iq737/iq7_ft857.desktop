@@ -1,9 +1,0 @@
-[Desktop Entry]
-Name=FT-857_lcd7
-Comment=Tiny Raspberry panadapter for FT-857 7inch LCD
-Path=/home/pi/iq7-hackrf
-Exec=sh launcher.sh
-Icon=/home/pi/iq7-hackrf/iq_icon.png
-Type=Application
-Categories=Application;Game;
-Name[en_GB]=FT-857_lcd7(hack)
