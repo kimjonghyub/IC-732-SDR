@@ -46,3 +46,62 @@ Tiny Python Panadapter (QST, April, 2014)
 Martin Ewing AA6E
 Revised May 20, 2014
 
+# Pre-installation for Raspberry Pi 4 Bookworm Version  
+pi@raspberrypi:~ $sudo apt-get install python3-pip
+
+pi@raspberrypi:~ $pip install pygame --berak-system-packages
+
+pi@raspberrypi:~ $pip install numpy --berak-system-packages
+
+pi@raspberrypi:~ $sudo pip install pyrtlsdr --break-system-packages
+
+pi@raspberrypi:~ $sudo apt-get install python-pygame portaudio19-dev python-numpy
+
+pi@raspberrypi:~ $sudo apt-get install rtl-sdr librtlsdr-dev
+
+pi@raspberrypi:~ $pip install pyaudio --berak-system-packages
+
+pi@raspberrypi:~ $sudo apt-get install git -y
+
+pi@raspberrypi:~ $wget https://github.com/Hamlib/Hamlib/releases/download/4.5.5/hamlib-4.5.5.tar.gz
+
+pi@raspberrypi:~ $tar -xvzf hamlib-4.5.5.tar.gz
+
+pi@raspberrypi:~ $sudo apt-get install build-essential automake autoconf swig 
+
+pi@raspberrypi:~ $cd hamlib-4.5.5
+
+pi@raspberrypi:~ /hamlib-4.5.5 $sudo  ./configure --with-python-binding PYTHON=$(which python3) --prefix=$HOME/local
+
+pi@raspberrypi:~ /hamlib-4.5.5 $sudo  ./configure --with-python-binding PYTHON=$(which python3) --prefix=/usr/local
+
+pi@raspberrypi:~ /hamlib-4.5.5 $sudo make
+
+pi@raspberrypi:~ /hamlib-4.5.5 $sudo make install 
+
+pi@raspberrypi:~ /hamlib-4.5.5 $cd bindings
+
+pi@raspberrypi:~ /hamlib-4.5.5/bindings $sudo make
+
+pi@raspberrypi:~ /hamlib-4.5.5/bindings $sudo make install
+
+pi@raspberrypi:~ /hamlib-4.5.5/bindings $export PYTHONPATH=$HOME/local/lib/python3.11/site-packages:$PYTHONPATH
+
+pi@raspberrypi:~ /hamlib-4.5.5/bindings $sudo echo 'export PATH=$HOME/local/bin:$PATH' >> ~/.bashrc
+
+pi@raspberrypi:~ /hamlib-4.5.5/bindings $source ~/.bashrc
+
+pi@raspberrypi:~ sudo nano /etc/profile  => Add the following text to the bottom of the file  
+export PYTHONPATH=$HOME/local/lib/python3.9/site-packages:$PYTHONPATH  
+export PATH=$HOME/local/bin:$PATH  
+
+### Source Code Sections to Modify and Compile in Hamlib-4.5.5  
+File Path ==> /home/pi/hamlib-4.5.5/src/rig.c  
+Content to Modify ==> rs->cache.timeout_ms = 50; 
+
+File Path ==> /home/pi/hamlib-4.5.5/rigs/icom/ic737.c  
+Content to Modify ==> .serial_rate_max =  9600,  
+
+### Recompile and Install  
+pi@raspberrypi:~/hamlib-4.5.5 $sudo make install  
+
