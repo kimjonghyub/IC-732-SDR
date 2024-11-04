@@ -63,6 +63,8 @@ pi@raspberrypi:~ $pip install pyaudio --berak-system-packages
 
 pi@raspberrypi:~ $sudo apt-get install git -y
 
+pi@raspberrypi:~ $sudo apt-get install fontconfig
+
 pi@raspberrypi:~ $wget https://github.com/Hamlib/Hamlib/releases/download/4.5.5/hamlib-4.5.5.tar.gz
 
 pi@raspberrypi:~ $tar -xvzf hamlib-4.5.5.tar.gz
