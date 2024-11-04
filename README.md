@@ -104,5 +104,15 @@ Pressed Right. Freq Up
 Mouse Wheel Scrol. Down. Freq Down  
 Mouse Wheel Scroll Up. Freq Up  
 
+## iq_opt.py  
+![iqopt](https://github.com/user-attachments/assets/bc8b9e26-a344-44b1-b694-dab45d25ad15)  
+hamlib_device  
+hamlib_rigtype  
+index  
+rtl_frequency  
+source_rtl  
+
+
+
 ## Reference Website Address  
 https://buildthings.wordpress.com/ham-radio-raspberry-pi-aa6e-tiny-python-panadapter/
