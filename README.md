@@ -77,22 +77,6 @@ pi@raspberrypi:~ /hamlib-4.5.5 $sudo make
 
 pi@raspberrypi:~ /hamlib-4.5.5 $sudo make install 
 
-pi@raspberrypi:~ /hamlib-4.5.5 $cd bindings
-
-pi@raspberrypi:~ /hamlib-4.5.5/bindings $sudo make
-
-pi@raspberrypi:~ /hamlib-4.5.5/bindings $sudo make install
-
-pi@raspberrypi:~ /hamlib-4.5.5/bindings $export PYTHONPATH=$HOME/local/lib/python3.11/site-packages:$PYTHONPATH
-
-pi@raspberrypi:~ /hamlib-4.5.5/bindings $sudo echo 'export PATH=$HOME/local/bin:$PATH' >> ~/.bashrc
-
-pi@raspberrypi:~ /hamlib-4.5.5/bindings $source ~/.bashrc
-
-pi@raspberrypi:~ sudo nano /etc/profile  => Add the following text to the bottom of the file  
-export PYTHONPATH=$HOME/local/lib/python3.9/site-packages:$PYTHONPATH  
-export PATH=$HOME/local/bin:$PATH  
-
 ### Source Code Sections to Modify and Compile in Hamlib-4.5.5  
 File Path ==> /home/pi/hamlib-4.5.5/src/rig.c  
 Content to Modify ==> rs->cache.timeout_ms = 50; 
