@@ -94,11 +94,11 @@ pi@raspberrypi:~ /IC732-SDR $python iq.py
 Pressed 1(!). STEP  
 Pressed 2(@). BAND  
 Pressed 3(#). MODE  
-Pressed 4($). VFO A/B
-Pressed Left. Freq down
-Pressed Right. Freq Up
-Mouse Wheel Scrol. Down. Freq Down
-Mouse Wheel Scroll Up. Freq Up
+Pressed 4($). VFO A/B  
+Pressed Left. Freq down  
+Pressed Right. Freq Up  
+Mouse Wheel Scrol. Down. Freq Down  
+Mouse Wheel Scroll Up. Freq Up  
 
 ### Recompile and Install  
 pi@raspberrypi:~/hamlib-4.5.5 $sudo make install  
