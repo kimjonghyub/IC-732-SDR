@@ -89,3 +89,5 @@ Content to Modify ==> .serial_rate_max =  9600,
 ### Recompile and Install  
 pi@raspberrypi:~/hamlib-4.5.5 $sudo make install  
 
+### Reference Website Address  
+https://buildthings.wordpress.com/ham-radio-raspberry-pi-aa6e-tiny-python-panadapter/
