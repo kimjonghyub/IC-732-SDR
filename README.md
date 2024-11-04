@@ -1,3 +1,9 @@
+IC732 Panadapter for Rtl-sdr
+![screen1](https://github.com/user-attachments/assets/317b3666-b436-4205-a144-0ab7d4aebcaf)
+![screen2-sdr](https://github.com/user-attachments/assets/810e9948-41f5-4798-9ed4-9b8edb0fad62)
+
+
+
 
 Tiny Python Panadapter (QST, April, 2014)
 Martin Ewing AA6E
