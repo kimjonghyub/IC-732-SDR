@@ -86,6 +86,20 @@ Content to Modify ==> rs->cache.timeout_ms = 50;
 File Path ==> /home/pi/hamlib-4.5.5/rigs/icom/ic737.c  
 Content to Modify ==> .serial_rate_max =  9600,  
 
+### Run the Program
+pi@raspberrypi:~ /cd IC732-SDR  
+pi@raspberrypi:~ /IC732-SDR $python iq.py  
+
+## Keyboard Setup  
+Pressed 1(!). STEP  
+Pressed 2(@). BAND  
+Pressed 3(#). MODE  
+Pressed 4($). VFO A/B
+Pressed Left. Freq down
+Pressed Right. Freq Up
+Mouse Wheel Scrol. Down. Freq Down
+Mouse Wheel Scroll Up. Freq Up
+
 ### Recompile and Install  
 pi@raspberrypi:~/hamlib-4.5.5 $sudo make install  
 
