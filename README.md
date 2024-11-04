@@ -1,6 +1,47 @@
-IC732 Panadapter for Rtl-sdr
-![screen1](https://github.com/user-attachments/assets/317b3666-b436-4205-a144-0ab7d4aebcaf)
-![screen2-sdr](https://github.com/user-attachments/assets/810e9948-41f5-4798-9ed4-9b8edb0fad62)
+# DIY IC732 Panadapter for Rtl-sdr!!!
+
+## How to Connect IF (Intermediate Frequency) Signals to RTL-SDR
+![screen1](https://github.com/user-attachments/assets/317b3666-b436-4205-a144-0ab7d4aebcaf)  
+### 1. Audio AF input image  
+
+![screen2-sdr](https://github.com/user-attachments/assets/810e9948-41f5-4798-9ed4-9b8edb0fad62)  
+### 2. Rtl-sdr input image  
+
+![if text](https://github.com/user-attachments/assets/a15fb88c-7c2a-4a7d-9fce-3344c845bfea)  
+### 3. IF Frequency 69.011500mHz  
+
+![main pcb sch](https://github.com/user-attachments/assets/43137579-a2c5-452a-b954-d373807368e9)  
+### 4. IF Point  
+
+![main pcb](https://github.com/user-attachments/assets/df089307-b83f-4586-b883-81e8b7419d56)  
+### 5. IF Point image  
+
+![main pcb_1](https://github.com/user-attachments/assets/8fdc47e6-bedb-445c-acec-49525ca8002b)  
+### 6. IF Point image  
+
+![main pcb img](https://github.com/user-attachments/assets/b0b3e42b-2834-4e4f-8673-aa616a83c11a)  
+### 7. IF Point image  
+
+![main pcb img_1](https://github.com/user-attachments/assets/c69d15d5-8721-476a-b461-44152a722c75)  
+### 8. IF Point image  
+
+![main pcb img_if](https://github.com/user-attachments/assets/0817e54d-c5c6-42dc-839f-67c2420e6a92)  
+### 9. IF Point image  
+
+![smc1](https://github.com/user-attachments/assets/c635ed1e-5573-49bf-b10f-caebb3e44fa3)  
+### 10. RF Connector image  
+
+![smc2](https://github.com/user-attachments/assets/76122360-781d-4bdf-b523-391ba51e0ba9)  
+### 11. RF Connector image  
+
+![smc3](https://github.com/user-attachments/assets/c3f558a5-a161-4832-8dfc-4b8593a7b1d3)  
+### 12. Wire Connection  
+
+![IMG_2948](https://github.com/user-attachments/assets/a8e56acf-a71c-4a2c-83f9-058eea14f5fe)  
+### 13. HDSDR   
+
+
+
 
 
 
