@@ -89,11 +89,11 @@ Content to Modify ==> .serial_rate_max =  9600,
 ### Recompile and Install  
 pi@raspberrypi:~/hamlib-4.5.5 $sudo make install  
 
-### Run the Program
+## Run the Program
 pi@raspberrypi:~ /cd IC732-SDR  
 pi@raspberrypi:~ /IC732-SDR $python iq.py  
 
-### Keyboard Setup  
+## Keyboard Setup  
 Pressed 1(!). STEP  
 Pressed 2(@). BAND  
 Pressed 3(#). MODE  
@@ -103,5 +103,5 @@ Pressed Right. Freq Up
 Mouse Wheel Scrol. Down. Freq Down  
 Mouse Wheel Scroll Up. Freq Up  
 
-### Reference Website Address  
+## Reference Website Address  
 https://buildthings.wordpress.com/ham-radio-raspberry-pi-aa6e-tiny-python-panadapter/
