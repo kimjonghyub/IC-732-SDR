@@ -23,7 +23,7 @@
 ### 7. IF Point image  
 
 ![main pcb img_1](https://github.com/user-attachments/assets/c69d15d5-8721-476a-b461-44152a722c75)  
-### 8. IF Point image  
+### 8. IF Point image  ==> Connect a 5pF capacitor in series between the IF point and the RF cable.  
 
 ![main pcb img_if](https://github.com/user-attachments/assets/0817e54d-c5c6-42dc-839f-67c2420e6a92)  
 ### 9. IF Point image  
