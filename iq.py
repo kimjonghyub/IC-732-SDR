@@ -156,8 +156,8 @@ class Graticule(object):
         ticks = [ -xtick_max, -xtick_max/2, -xtick_max/4,-xtick_max/10, 0, xtick_max/10, xtick_max/4, xtick_max/2, xtick_max ]
         for offset in ticks:
             x = offset*xscale + self.w/2
-            pg.draw.line(self.surface, self.color_l, (x, 0), (x, self.h),width=1)
-            pg.draw.line(self.surface, BLUE, ((self.w/2), 1), ((self.w/2), (self.h-4)),width=2)
+            pg.draw.line(self.surface, self.color_l, (x, 0), (x, self.h))
+            pg.draw.line(self.surface, BLUE, ((self.w/2), 1), ((self.w/2), (self.h-4)))
             fmt = "%d kHz" if offset == 0 else "%+3d"
             self.surface.blit(self.font.render(fmt % offset, 1, self.color_t), 
                                         (x+2, 0))
