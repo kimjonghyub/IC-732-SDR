@@ -55,7 +55,7 @@ pi@raspberrypi:~ $pip install numpy --break-system-packages
 
 pi@raspberrypi:~ $sudo pip install pyrtlsdr --break-system-packages
 
-pi@raspberrypi:~ $sudo apt-get install python-pygame portaudio19-dev python-numpy
+pi@raspberrypi:~ $sudo apt-get install portaudio19-dev -y
 
 pi@raspberrypi:~ $sudo apt-get install rtl-sdr librtlsdr-dev
 
