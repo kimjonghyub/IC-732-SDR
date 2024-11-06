@@ -90,7 +90,7 @@ Content to Modify ==> .serial_rate_max =  9600,
 pi@raspberrypi:~/hamlib-4.5.5 $sudo make install  
 
 ## Run the Program
-pi@raspberrypi:~ $sudo git clone http://https://github.com/kimjonghyub/IC732-SDR.git  
+pi@raspberrypi:~ $sudo git clone https://github.com/kimjonghyub/IC732-SDR.git  
 pi@raspberrypi:~ /cd IC732-SDR  
 pi@raspberrypi:~ /IC732-SDR $python iq.py  
 
