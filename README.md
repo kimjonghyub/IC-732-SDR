@@ -73,7 +73,7 @@ pi@raspberrypi:~ $sudo apt-get install build-essential automake autoconf swig
 
 pi@raspberrypi:~ $cd hamlib-4.5.5
 
-pi@raspberrypi:~ /hamlib-4.5.5 $sudo  ./configure --with-python-binding PYTHON=$(which python3) --prefix=/usr
+pi@raspberrypi:~ /hamlib-4.5.5 $sudo ./configure --with-python-binding PYTHON=$(which python3) --prefix=/usr
 
 pi@raspberrypi:~ /hamlib-4.5.5 $sudo make
 
