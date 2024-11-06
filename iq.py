@@ -87,7 +87,9 @@ class LED(object):
         """ width = pixels width (& height)
             colors = dictionary with color_values and PyGame Color specs
         """
-        self.surface = pg.Surface((width, width))
+        self.w = width
+        self.h = width
+        self.surface = pg.Surface((int(self.w), int(self.h)))
         self.wd2 = int(width/2)
         return
 
@@ -112,11 +114,11 @@ class Graticule(object):
     """
     def __init__(self, opt, font, h, w, color_l, color_t):
         self.opt = opt
-        self.sp_max = opt.sp_max #-20   # default max value (dB)
-        self.sp_min = opt.sp_min #-120  # default min value
+        self.sp_max = int(opt.sp_max) #-20   # default max value (dB)
+        self.sp_min = int(opt.sp_min) #-120  # default min value
         self.font = font    # font to use for text
-        self.h = h          # height of graph area
-        self.w = w          # width
+        self.h = int(h)          # height of graph area
+        self.w = int(w)          # width
         self.color_l = color_l    # color for lines
         self.color_t = color_t    # color for text
         self.surface = pg.Surface((self.w, self.h))
@@ -135,10 +137,10 @@ class Graticule(object):
             yattnflip = self.h - yattn    # screen y coord increases downward
             # Draw a single line, dark red.
             pg.draw.line(self.surface, self.color_l, (0, yattnflip), 
-                                        (self.w, yattnflip))
+                                        (int(self.w), int(yattnflip)))
             # Render and blit the dB value at left, just above line
             self.surface.blit(self.font.render("%3d" % attn, 1, self.color_t), 
-                                        (5, yattnflip-12))
+                                        (5, int(yattnflip)-12))
 
         # add unit (dB) to topmost label        
         ww, hh = self.font.size("%3d" % attn)
@@ -155,9 +157,9 @@ class Graticule(object):
                 break
         ticks = [ -xtick_max, -xtick_max/2, -xtick_max/4,-xtick_max/10, 0, xtick_max/10, xtick_max/4, xtick_max/2, xtick_max ]
         for offset in ticks:
-            x = offset*xscale + self.w/2
-            pg.draw.line(self.surface, self.color_l, (x, 0), (x, self.h))
-            pg.draw.line(self.surface, BLUE, ((self.w/2), 1), ((self.w/2), (self.h-4)))
+            x = int(offset*xscale + self.w/2)
+            pg.draw.line(self.surface, self.color_l, (int(x), 0), (int(x), int(self.h)))
+            pg.draw.line(self.surface, BLUE, (int(self.w/2), 1), (int(self.w/2), int(self.h-4)))
             fmt = "%d kHz" if offset == 0 else "%+3d"
             self.surface.blit(self.font.render(fmt % offset, 1, self.color_t), 
                                         (x+2, 0))
@@ -531,7 +533,7 @@ def button(msg,x,y,w,h,ic,ac,tc,hc,action=None):
         text_color = tc
     
     textSurf, textRect = text_objects(msg, mzfont, text_color)
-    textRect.center = ( (x+(w/2)), (y+(h/2)) )
+    textRect.center = ( (int(x)+(int(w/2))), (int(y)+(int(h/2))) )
     surf_main.blit(textSurf, textRect)
 
 
@@ -575,7 +577,7 @@ while True:
     if opt.control == "si570":
         msg = "%.3f kHz" % (mysi570.getFreqByValue() * 1000.) # freq/4 from Si570
     elif opt.hamlib:
-        msg = "-----"  #fail link cat
+        msg = "-----"
         rigfreq1 = str(rigfreq)
         length = len(rigfreq1)
         if length >= 9:
@@ -605,16 +607,16 @@ while True:
         #metersc = rig.get_level_i(Hamlib.RIG_LEVEL_STRENGTH) 
         ww, hh = lgfont.size(msg)
         surf_main.blit(lgfont.render(msg, 1, BLACK, SCREEN), 
-                            (w_middle + x_spectra - ww/2, y_2d-140))
+                            (int(w_middle) + int(x_spectra) - int(ww/2), int(y_2d)-140))
         msg = "Mhz"
         surf_main.blit(mzfont.render(msg, 1, BLACK, SCREEN),
-                       (w_middle + x_spectra+ww/2 , y_2d-80))
+                       (int(w_middle) + int(x_spectra)+int(ww/2) , int(y_2d)-80))
         
         msg = "MODE %s" % (mode_name)
-        surf_main.blit(mefont.render(msg, 1, BLACK, SCREEN), (20,y_2d-210))
+        surf_main.blit(mefont.render(msg, 1, BLACK, SCREEN), (20,int(y_2d)-210))
         
         msg = "/ BAND %s" % (band_name)
-        surf_main.blit(mefont.render(msg, 1, BLACK, SCREEN), (150,y_2d-210))
+        surf_main.blit(mefont.render(msg, 1, BLACK, SCREEN), (150,int(y_2d)-210))
         
         #msg = "/ STEP %s" % (freq_step / 1000000)
         #surf_main.blit(mefont.render(msg, 1, BLACK, SCREEN), (400,y_2d-210))
@@ -623,28 +625,28 @@ while True:
         #surf_main.blit(mefont.render(msg, 1, BLACK, SCREEN), ((w_spectra-200),y_2d-210))
         
         msg = "VFO %s" % (vfo_name)
-        surf_main.blit(mefont.render(msg, 1, BLACK, SCREEN), (20,y_2d-180))
+        surf_main.blit(mefont.render(msg, 1, BLACK, SCREEN), (20,int(y_2d)-180))
         if freq_step == 10000000:
             msg = "=="  
-            surf_main.blit(mefont.render(msg, 1, BLACK, SCREEN), (w_middle-170,y_2d-170)) #10Mhz
+            surf_main.blit(mefont.render(msg, 1, BLACK, SCREEN), (int(w_middle)-170,int(y_2d)-170)) #10Mhz
         elif freq_step == 1000000:
             msg = "=="  
-            surf_main.blit(mefont.render(msg, 1, BLACK, SCREEN), (w_middle-120,y_2d-170)) #1mHz
+            surf_main.blit(mefont.render(msg, 1, BLACK, SCREEN), (int(w_middle)-120,int(y_2d)-170)) #1mHz
         elif freq_step == 100000:        
             msg = "=="  
-            surf_main.blit(mefont.render(msg, 1, BLACK, SCREEN), (w_middle-30,y_2d-170))  #100kHz
+            surf_main.blit(mefont.render(msg, 1, BLACK, SCREEN), (int(w_middle)-30,int(y_2d)-170))  #100kHz
         elif freq_step == 10000:
             msg = "=="  
-            surf_main.blit(mefont.render(msg, 1, BLACK, SCREEN), (w_middle+30,y_2d-170))  #10kHz
+            surf_main.blit(mefont.render(msg, 1, BLACK, SCREEN), (int(w_middle)+30,int(y_2d)-170))  #10kHz
         elif freq_step == 1000:
             msg = "=="  
-            surf_main.blit(mefont.render(msg, 1, BLACK, SCREEN), (w_middle+90,y_2d-170))  #1kHz
+            surf_main.blit(mefont.render(msg, 1, BLACK, SCREEN), (int(w_middle)+90,int(y_2d)-170))  #1kHz
         elif freq_step == 100:
             msg = "=="  
-            surf_main.blit(mefont.render(msg, 1, BLACK, SCREEN), (w_middle+175,y_2d-170))  #0.1kHz
+            surf_main.blit(mefont.render(msg, 1, BLACK, SCREEN), (int(w_middle)+175,int(y_2d)-170))  #0.1kHz
         elif freq_step == 10:
             msg = "=="  
-            surf_main.blit(mefont.render(msg, 1, BLACK, SCREEN), (w_middle+235,y_2d-170))  #0.01kHz
+            surf_main.blit(mefont.render(msg, 1, BLACK, SCREEN), (int(w_middle)+235,int(y_2d)-170))  #0.01kHz
         
         
         """ 
@@ -713,8 +715,8 @@ while True:
         msg = "Buffer underrun"
         ww, hh = medfont.size(msg)
         ww1 = SCREEN_SIZE[0]-ww-10
-        surf_main.blit(medfont.render(msg, 1, BLACK, BGCOLOR), (ww1, y_2d-hh))
-        surf_main.blit(sled, (ww1-15, y_2d-hh))
+        surf_main.blit(medfont.render(msg, 1, BLACK, BGCOLOR), (int(ww1), int(y_2d-hh)))
+        surf_main.blit(sled, (int(ww1)-15, int(y_2d-hh)))
         if myDSP.led_clip_ct > 0:                   # overflow flag
             sled = led_clip.get_LED_surface(RED)
             myDSP.led_clip_ct -= 1
@@ -722,8 +724,8 @@ while True:
             sled = led_clip.get_LED_surface(None)   #off!
         msg = "Pulse clip"
         ww, hh = medfont.size(msg)
-        surf_main.blit(medfont.render(msg, 1, BLACK, BGCOLOR), (25, y_2d-hh))
-        surf_main.blit(sled, (10, y_2d-hh))
+        surf_main.blit(medfont.render(msg, 1, BLACK, BGCOLOR), (25, int(y_2d-hh)))
+        surf_main.blit(sled, (10, int(y_2d-hh)))
 
     if opt.source=='rtl':               # Input from RTL-SDR dongle
         iq_data_cmplx = dataIn.ReadSamples(chunk_size)
@@ -767,16 +769,16 @@ while True:
     lylist = len(ylist)
     xlist = [ x* w_spectra/lylist for x in range(lylist) ]
     # Draw the spectrum based on our data lists.
-    pg.draw.lines(surf_2d, WHITE, False, list(zip(xlist,ylist)), 1)
-
+    #pg.draw.lines(surf_2d, WHITE, False, list(zip(xlist,ylist)), 1)
+    pg.draw.lines(surf_2d, WHITE, False, [(int(x), int(y)) for x, y in zip(xlist, ylist)], 1)
     # Place 2d spectrum on main surface
-    surf_main.blit(surf_2d, (x_spectra, y_2d))
+    surf_main.blit(surf_2d, (int(x_spectra), int(y_2d)))
 
     if opt.waterfall:
         # Calculate the new Waterfall line and blit it to main surface
         nsum = opt.waterfall_accumulation    # 2d spectra per wf line
         mywf.calculate(sp_log, nsum, surf_wf)
-        surf_main.blit(surf_wf, (x_spectra, y_wf+1))
+        surf_main.blit(surf_wf, (int(x_spectra), int(y_wf+1)))
 
     if info_phase > 0:
         # Assemble and show semi-transparent overlay info screen
@@ -946,7 +948,7 @@ while True:
                     elif opt.hamlib:
                         
                         rigfreq_request = rigfreq + freq_step
-                        
+                        print("Freq Up")
                     else:
                         print ("Rt arrow ignored, no Hamlib")
                 elif event.key == pg.K_LEFT:         # left arrow - freq
@@ -959,7 +961,7 @@ while True:
                     elif opt.hamlib:
                         
                         rigfreq_request = rigfreq - freq_step
-                        
+                        print("Freq Down")
                 
                     else:
                         print ("Lt arrow ignored, no Hamlib")
