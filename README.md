@@ -73,11 +73,11 @@ pi@raspberrypi:~ $sudo apt-get install build-essential automake autoconf swig
 
 pi@raspberrypi:~ $cd hamlib-4.5.5
 
-pi@raspberrypi:~ /hamlib-4.5.5 $sudo ./configure --with-python-binding PYTHON=$(which python3) --prefix=/usr
+pi@raspberrypi:~/hamlib-4.5.5 $ sudo ./configure --with-python-binding PYTHON=$(which python3) --prefix=/usr
 
-pi@raspberrypi:~ /hamlib-4.5.5 $sudo make
+pi@raspberrypi:~/hamlib-4.5.5 $ sudo make
 
-pi@raspberrypi:~ /hamlib-4.5.5 $sudo make install 
+pi@raspberrypi:~/hamlib-4.5.5 $ sudo make install 
 
 ### Source Code Sections to Modify and Compile in Hamlib-4.5.5  
 File Path ==> /home/pi/hamlib-4.5.5/src/rig.c  
