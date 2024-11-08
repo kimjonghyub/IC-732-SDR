@@ -4,7 +4,78 @@ import numpy  as np
 import iq_dspmono as dsp
 import iq_wf  as wf
 import iq_opt as options
+import pyaudio
+import math
 
+stream = None
+
+def MicInput():
+    global stream, CHUNK, RATE, min_freq, max_freq
+    CHUNK = 512
+    FORMAT = pyaudio.paInt16
+    CHANNELS = 1
+    RATE = 44100
+    min_freq = 500
+    max_freq = 5000
+
+    p=pyaudio.PyAudio()
+    stream = p.open(format=FORMAT, 
+                    channels=CHANNELS, 
+                    rate=RATE, 
+                    input=True, 
+                    input_device_index=opt.index, 
+                    frames_per_buffer=CHUNK)
+
+def get_mic_data():
+    audio_data = stream.read(CHUNK, exception_on_overflow=False)
+    audio_array = np.frombuffer(audio_data, dtype=np.int16)
+    
+    return audio_array
+
+def fft_level(bgcolor, color,audio_data, x, y, width, height):
+    surf_main.fill(color, (x, y, width, height))
+    fft_complex = np.fft.fft(audio_data, n=CHUNK)
+    fft_complex = fft_complex[:CHUNK // 2]
+    freqs = np.fft.fftfreq(CHUNK, 1 / RATE)[:CHUNK // 2]
+    freq_indices = np.where((freqs >= min_freq) & (freqs <= max_freq))[0]
+    filtered_fft = fft_complex[freq_indices]
+    filtered_freqs = freqs[freq_indices]
+    max_val = math.sqrt(max(v.real * v.real + v.imag * v.imag for v in filtered_fft))
+    scale_value = height / max_val 
+    
+    for i,v in enumerate(filtered_fft):
+        dist = math.sqrt(v.real * v.real + v.imag * v.imag)
+        mapped_dist = dist * scale_value
+        x_pos = x + i * width / len(filtered_fft)  
+        pg.draw.line(surf_main, bgcolor, 
+                     (x_pos, y + height), 
+                     (x_pos, y + height - mapped_dist),2)
+        
+def draw_level_meter(bgcolor, color,audio_data, x, y, width, height):
+    surf_main.fill(color, (x, y, width, height))
+    level = np.clip(np.abs(audio_data).mean() / 32768, 0, 200)
+    bar_width = int(level * 347) 
+    meterbar = pg.image.load('meter3.png').convert_alpha()
+    meter = pg.image.load('meter2.png').convert_alpha()
+    surf_main.blit(meterbar,(20,160))
+    surf_main.blit(meter, (20,160),(0,0,bar_width,50))
+
+def draw_audio_graph(bgcolor,color, audio_data, x, y, width, height):
+    surf_main.fill(color, (x, y, width, height))
+    max_amplitude = np.max(np.abs(audio_data))
+    
+    if max_amplitude > 0:
+        normalized_data = np.clip(audio_data / max_amplitude, -25, 25)
+    else:
+        normalized_data = audio_data
+    y_mid = y + height // 2 
+    for i in range(len(normalized_data) - 1):
+        x1 = x + i * width / len(normalized_data)
+        y1 = y_mid - (normalized_data[i] * height // 2)
+        x2 = x + (i + 1) * width / len(normalized_data)
+        y2 = y_mid - (normalized_data[i + 1] * height // 2)
+        pg.draw.line(surf_main, bgcolor, (x1, y1), (x2, y2), 1)
+        
 # Some colors in PyGame style
 BLACK =    (  0,   0,   0)
 WHITE =    (255, 255, 255)
@@ -498,6 +569,7 @@ print ("Update interval = %.2f ms" % float(1000*chunk_time))
 if opt.source=="rtl":             # input from RTL dongle (and freq control)
     import iq_rtl as rtl
     dataIn = rtl.RTL_In(opt)
+    MicInput()
 elif opt.source=='audio':         # input from audio card
     import iq_afmono as af
     mainqueueLock = af.queueLock    # queue and lock only for soundcard
@@ -648,7 +720,11 @@ while True:
             msg = "=="  
             surf_main.blit(mefont.render(msg, 1, BLACK, SCREEN), (int(w_middle)+235,int(y_2d)-170))  #0.01kHz
         
-        
+        if opt.source=="rtl":
+            mic_data = get_mic_data()
+            fft_level(BLACK,SCREEN, mic_data, 20, 80, 200, 70)
+            #draw_audio_graph(BLACK,SCREEN, mic_data, 20, 90, 200, 50)
+            draw_level_meter(BLACK,SCREEN, mic_data, 20, 170, 200, 10)
         """ 
         msg = "S%s" % (metersc)
         surf_main.blit(mefont.render(msg, 1, BLACK, SCREEN), (400,170))
