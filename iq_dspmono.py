@@ -46,7 +46,7 @@ class DSP(object):
         #size = len(data) // self.opt.buffers
         power_spectrum = np.zeros(size)
         td_median = np.median(np.abs(data[:size])) if len(data[:size]) > 0 else 0
-        td_threshold = self.opt.pulse * td_median
+        td_threshold = (self.opt.pulse * td_median) * 2
         nbuf_taken = 0
 
         for ic in range(self.opt.buffers):
