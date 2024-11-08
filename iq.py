@@ -41,7 +41,10 @@ def fft_level(bgcolor, color,audio_data, x, y, width, height):
     filtered_fft = fft_complex[freq_indices]
     filtered_freqs = freqs[freq_indices]
     max_val = math.sqrt(max(v.real * v.real + v.imag * v.imag for v in filtered_fft))
-    scale_value = height / max_val 
+    if max_val > 0:
+        scale_value = height / max_val 
+    else:
+        scale_value = 1
     
     for i,v in enumerate(filtered_fft):
         dist = math.sqrt(v.real * v.real + v.imag * v.imag)
