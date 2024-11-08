@@ -57,7 +57,7 @@ def fft_level(bgcolor, color,audio_data, x, y, width, height):
 def draw_level_meter(bgcolor, color,audio_data, x, y, width, height):
     surf_main.fill(color, (x, y, width, height))
     level = np.clip(np.abs(audio_data).mean() / 32768, 0, 200)
-    bar_width = int(level * 347) 
+    bar_width = int(level * 2000) 
     meterbar = pg.image.load('meter3.png').convert_alpha()
     meter = pg.image.load('meter2.png').convert_alpha()
     surf_main.blit(meterbar,(20,160))
