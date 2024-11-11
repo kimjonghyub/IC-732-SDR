@@ -49,9 +49,9 @@ Revised May 20, 2014
 # Pre-installation for Raspberry Pi 4 Bookworm Version  
 pi@raspberrypi:~ $sudo apt-get install python3-pip
 
-pi@raspberrypi:~ $pip install pygame --break-system-packages
+pi@raspberrypi:~ $sudo pip install pygame --break-system-packages
 
-pi@raspberrypi:~ $pip install numpy --break-system-packages
+pi@raspberrypi:~ $sudo pip install numpy --break-system-packages
 
 pi@raspberrypi:~ $sudo pip install pyrtlsdr --break-system-packages
 
@@ -59,7 +59,7 @@ pi@raspberrypi:~ $sudo apt-get install portaudio19-dev -y
 
 pi@raspberrypi:~ $sudo apt-get install rtl-sdr librtlsdr-dev
 
-pi@raspberrypi:~ $pip install pyaudio --break-system-packages
+pi@raspberrypi:~ $sudo pip install pyaudio --break-system-packages
 
 pi@raspberrypi:~ $sudo apt-get install git -y
 
