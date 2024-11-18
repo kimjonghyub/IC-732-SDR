@@ -372,10 +372,16 @@ if opt.hamlib:
                 band_name = "30m"
             elif 14.0e6 <= rigfreq <= 14.35e6:
                 band_name = "20m"
+            elif 18.068e6 <= rigfreq <= 18.168e6:
+                band_name = "17m"
             elif 21.0e6 <= rigfreq <= 21.45e6:
                 band_name = "15m"
+            elif 24.89e6 <= rigfreq <= 24.99e6:
+                band_name = "12m"
             elif 28.0e6 <= rigfreq <= 29.7e6:
                 band_name = "10m"
+            elif 50.00e6 <= rigfreq <= 54.00e6:
+                band_name = "6m"
             else:
                 band = "Unknown"
         except Exception as e:
@@ -388,8 +394,11 @@ if opt.hamlib:
         7.074e6,
         10.136e6,
         14.074e6,
+        18.100e6,
         21.074e6,
+        24.915e6,
         28.074e6,
+        50.523e6,
     ]
     band_index = 0
     
