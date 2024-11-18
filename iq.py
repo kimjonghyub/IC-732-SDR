@@ -31,7 +31,7 @@ def get_mic_data():
     try:
     	audio_data = stream.read(CHUNK, exception_on_overflow=False)
     	audio_array = np.frombuffer(audio_data, dtype=np.int16)
-  	max_amplitude = np.max(np.abs(audio_array))
+        max_amplitude = np.max(np.abs(audio_array))
         if max_amplitude > 30000:  
             audio_array = np.clip(audio_array, -30000, 30000)
     	return audio_array
