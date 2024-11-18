@@ -27,7 +27,8 @@ def MicInput():
                     frames_per_buffer=CHUNK)
 
 def get_mic_data():
-try:
+    global audio_data
+    try:
     	audio_data = stream.read(CHUNK, exception_on_overflow=False)
     	audio_array = np.frombuffer(audio_data, dtype=np.int16)
   	max_amplitude = np.max(np.abs(audio_array))
@@ -35,11 +36,11 @@ try:
             audio_array = np.clip(audio_array, -30000, 30000)
     	return audio_array
 	
-except IOError as e:
+    except IOError as e:
         print(f"Audio buffer error: {e}")
         return np.zeros(CHUNK, dtype=np.int16)  
 
-except Exception as e:
+    except Exception as e:
         print(f"Unexpected error in get_mic_data_safe: {e}")
         return np.zeros(CHUNK, dtype=np.int16)
 
