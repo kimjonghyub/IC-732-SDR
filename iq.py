@@ -31,7 +31,7 @@ try:
     	audio_data = stream.read(CHUNK, exception_on_overflow=False)
     	audio_array = np.frombuffer(audio_data, dtype=np.int16)
   	max_amplitude = np.max(np.abs(audio_array))
-        if max_amplitude > 30000:  # 과도한 진폭 제한
+        if max_amplitude > 30000:  
             audio_array = np.clip(audio_array, -30000, 30000)
     	return audio_array
 	
@@ -72,7 +72,7 @@ def fft_level(bgcolor, color,audio_data, x, y, width, height):
 def draw_level_meter(bgcolor, color,audio_data, x, y, width, height):
     try:
         surf_main.fill(color, (x, y, width, height))
-        level = np.clip(np.abs(audio_data).mean() / 32768, 0, 200)
+        level = np.clip(np.abs(audio_data).mean() / 32768, 0, 1)
         bar_width = int(level * 2000) 
         meterbar = pg.image.load('meter3.png').convert_alpha()
         meter = pg.image.load('meter2.png').convert_alpha()
