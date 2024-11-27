@@ -29,12 +29,12 @@ def MicInput():
 def get_mic_data():
     global audio_data
     try:
-    	audio_data = stream.read(CHUNK, exception_on_overflow=False)
-    	audio_array = np.frombuffer(audio_data, dtype=np.int16)
+        audio_data = stream.read(CHUNK, exception_on_overflow=False)
+        audio_array = np.frombuffer(audio_data, dtype=np.int16)
         max_amplitude = np.max(np.abs(audio_array))
         if max_amplitude > 30000:  
             audio_array = np.clip(audio_array, -30000, 30000)
-    	return audio_array
+        return audio_array
 	
     except IOError as e:
         print(f"Audio buffer error: {e}")
@@ -47,34 +47,34 @@ def get_mic_data():
 
 def fft_level(bgcolor, color,audio_data, x, y, width, height):
     try:
-    	surf_main.fill(color, (x, y, width, height))
-    	fft_complex = np.fft.fft(audio_data, n=CHUNK)
-    	fft_complex = fft_complex[:CHUNK // 2]
-    	freqs = np.fft.fftfreq(CHUNK, 1 / RATE)[:CHUNK // 2]
-    	freq_indices = np.where((freqs >= min_freq) & (freqs <= max_freq))[0]
-    	filtered_fft = fft_complex[freq_indices]
-    	filtered_freqs = freqs[freq_indices]
-    	max_val = math.sqrt(max(v.real * v.real + v.imag * v.imag for v in filtered_fft))
-    	if max_val > 0:
+        surf_main.fill(color, (x, y, width, height))
+        fft_complex = np.fft.fft(audio_data, n=CHUNK)
+        fft_complex = fft_complex[:CHUNK // 2]
+        freqs = np.fft.fftfreq(CHUNK, 1 / RATE)[:CHUNK // 2]
+        freq_indices = np.where((freqs >= min_freq) & (freqs <= max_freq))[0]
+        filtered_fft = fft_complex[freq_indices]
+        filtered_freqs = freqs[freq_indices]
+        max_val = math.sqrt(max(v.real * v.real + v.imag * v.imag for v in filtered_fft))
+        if max_val > 0:
             scale_value = height / max_val 
-    	else:
+        else:
             scale_value = 1
     
-    	for i,v in enumerate(filtered_fft):
-	    dist = math.sqrt(v.real * v.real + v.imag * v.imag)
+        for i,v in enumerate(filtered_fft):
+            dist = math.sqrt(v.real * v.real + v.imag * v.imag)
             mapped_dist = dist * scale_value
             x_pos = x + i * width / len(filtered_fft)  
             pg.draw.line(surf_main, bgcolor, 
                          (x_pos, y + height), 
                          (x_pos, y + height - mapped_dist),2)
-     except Exception as e:
+    except Exception as e:
         print(f"Error in fft_level_safe: {e}")
         
 def draw_level_meter(bgcolor, color,audio_data, x, y, width, height):
     try:
         surf_main.fill(color, (x, y, width, height))
         level = np.clip(np.abs(audio_data).mean() / 32768, 0, 1)
-        bar_width = int(level * (width * 5)) 
+        bar_width = int(level * (253)) 
         meterbar = pg.image.load('meter3.png').convert_alpha()
         meter = pg.image.load('meter2.png').convert_alpha()
         surf_main.blit(meterbar,(20,160))
