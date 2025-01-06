@@ -837,7 +837,14 @@ while True:
 
     if opt.source=='rtl':               # Input from RTL-SDR dongle
         iq_data_cmplx = dataIn.ReadSamples(chunk_size)
-        if opt.rev_iq:                  # reverse spectrum?
+       
+        def remove_dc_offset(samples):
+            mean_value = np.mean(samples)
+            return samples - mean_value
+
+        iq_data_cmplx = remove_dc_offset(iq_data_cmplx)  
+	    
+	if opt.rev_iq:                  # reverse spectrum?
             iq_data_cmplx = np.imag(iq_data_cmplx)+1j*np.real(iq_data_cmplx)
         #time.sleep(0.05)                # slow down if fast PC
         stats = [ 0, 0]                 # for now...
@@ -861,6 +868,12 @@ while True:
             iq_data_cmplx = np.array(im_d + re_d*1j)
         else:               # normal spectrum
             iq_data_cmplx = np.array(re_d + im_d*1j)
+
+        def remove_dc_offset(samples):
+            mean_value = np.mean(samples)
+            return samples - mean_value
+
+        iq_data_cmplx = remove_dc_offset(iq_data_cmplx) 
 
     sp_log = myDSP.GetLogPowerSpectrum(iq_data_cmplx)
     if opt.source=='rtl':   # Boost rtl spectrum (arbitrary amount)
