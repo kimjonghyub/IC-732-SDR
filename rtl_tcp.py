@@ -53,99 +53,52 @@ class RtlTcpHandler:
 
     def set_frequency(self, frequency_hz):
         """Set the center frequency."""
-        try:
-            self.sdr.center_freq = frequency_hz
-            #logging.info(f"Frequency set to {frequency_hz} Hz")
-        except Exception as e:
-            logging.error(f"Failed to set frequency: {e}")
+        self.sdr.center_freq = frequency_hz
 
     def set_sample_rate(self, sample_rate_hz):
         """Set the sample rate."""
-        try:
-            self.sdr.sample_rate = sample_rate_hz
-            #logging.info(f"Sample rate set to {sample_rate_hz} Hz")
-        except Exception as e:
-            logging.error(f"Failed to set sample rate: {e}")
+        self.sdr.sample_rate = sample_rate_hz
 
     def set_gain_mode(self, auto_gain):
         """Set gain mode."""
-        try:
-            self.sdr.gain = 'auto' if auto_gain else 40
-            #logging.info(f"Gain mode set to {'auto' if auto_gain else 'manual'}")
-        except Exception as e:
-            logging.error(f"Failed to set gain mode: {e}")
+        self.sdr.gain = 'auto' if auto_gain else 40
 
     def set_gain(self, gain_db):
         """Set gain."""
-        try:
-            self.sdr.gain = gain_db
-            #logging.info(f"Gain set to {gain_db} dB")
-        except Exception as e:
-            logging.error(f"Failed to set gain: {e}")
+        self.sdr.gain = gain_db
 
     def get_dongle_info(self):
         """Return the dongle information header."""
-        try:
-            tuner_type = self.sdr.get_tuner_type()
-            gain_count = len(self.sdr.valid_gains_db)
-            return MAGIC_HEADER + struct.pack(">II", tuner_type, gain_count)
-        except Exception as e:
-            logging.error(f"Failed to retrieve dongle information: {e}")
-            return None    
+        tuner_type = self.sdr.get_tuner_type()
+        gain_count = len(self.sdr.valid_gains_db)
+        return MAGIC_HEADER + struct.pack(">II", tuner_type, gain_count)
 
     
     async def stream_iq_data(self, transport):
         """Stream raw I/Q data to the client."""
-        try:
-            async for samples in self.sdr.stream():
-            # Convert to unsigned 8-bit I/Q samples
-                iq_data = np.empty(samples.size * 2, dtype=np.uint8)
-                real = np.clip((samples.real + 1) * 127.5, 0, 255).astype(np.uint8)
-                imag = np.clip((samples.imag + 1) * 127.5, 0, 255).astype(np.uint8)
-                iq_data[0::2], iq_data[1::2] = real, imag
+        async for samples in self.sdr.stream():
+            iq_data = np.empty(samples.size * 2, dtype=np.uint8)
+            real = np.clip((samples.real + 1) * 127.5, 0, 255).astype(np.uint8)
+            imag = np.clip((samples.imag + 1) * 127.5, 0, 255).astype(np.uint8)
+            iq_data[0::2], iq_data[1::2] = real, imag
 
-                try:
-                    await self.iq_buffer.put(iq_data.tobytes())
-                except asyncio.QueueFull:
-                    logging.warning("I/Q Full")
-
-                #transport.write(iq_data.tobytes())
-                #await asyncio.sleep(0)
-        #except asyncio.CancelledError:
-            #logging.info("I/Q streaming task cancelled")
-            #logging.info(f"Streaming {len(iq_data)} bytes of I/Q data to the client")
-        except Exception as e:
-            logging.error(f"Error during I/Q data streaming: {e}")
+            if not self.iq_buffer.full():
+                await self.iq_buffer.put(iq_data.tobytes())
 
     async def send_iq_data(self, transport):
         """Send I/Q data to the client."""
         while True:
-            try:
-                iq_data = await self.iq_buffer.get()
-                if transport.is_closing():
-                    logging.warning("Transport is closing. Stopping data transmission.")
-                    break
-                transport.write(iq_data)
-                self.iq_buffer.task_done()
-                await asyncio.sleep(0.01)
-            except asyncio.CancelledError:
-                logging.info("I/Q data transmission task cancelled")
+            iq_data = await self.iq_buffer.get()
+            if transport.is_closing():
                 break
-            except (ConnectionResetError, BrokenPipeError) as e:
-                logging.warning(f"Connection error: {e}. Stopping transmission.")
-                break
-            except Exception as e:
-                logging.error(f"Unexpected error during I/Q data transmission: {e}")
-                break
+            transport.write(iq_data)
+            self.iq_buffer.task_done()
+            await asyncio.sleep(0.01)
 
     def stop_streaming(self):
         """Stop the RTL-SDR streaming."""
         if self.sdr:
-            try:
-                self.sdr.cancel_read_async()  
-                #logging.info("Stopped RTL-SDR streaming")
-            except Exception as e:
-                logging.error(f"Failed to stop streaming: {e}")
+            self.sdr.cancel_read_async()
 
     def close(self):
         """Close the RTL-SDR device."""
@@ -209,8 +162,6 @@ class ClientHandler(asyncio.Protocol):
             logging.info("Connection closed cleanly")
 
     async def handle_command(self, cmd_id, param):
-       
-        
         if cmd_id == CMD_SET_FREQ:
             self.rtl_handler.set_frequency(param)
             logging.info(f"set freq {param} Hz")
