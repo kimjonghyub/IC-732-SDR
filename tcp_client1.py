@@ -2,6 +2,7 @@ import asyncio
 import struct
 import pygame
 import numpy as np
+import scipy.signal
 
 # Constants for commands
 MAGIC_HEADER = b"RTL0"
@@ -12,26 +13,32 @@ CMD_SET_FREQ_CORRECTION = 0x05
 CMD_SET_AGC_MODE = 0x08
 CMD_SET_DIRECT_SAMPLING = 0x09
 CMD_SET_GAIN_MODE = 0x03
+CMD_SET_OFFEST_TURNING =  0x0a
+FRAME_SIZE = 512
+BUFFER_SIZE = FRAME_SIZE * 2
 
 # Configuration
 SERVER_IP = "192.168.10.216"
 SERVER_PORT = 1234
-FREQ = 69011500
-SAMPLE_RATE = 240000
+FREQ = 69011000
+SAMPLE_RATE = 250000
 GAIN = 405  # Represented in tenths of dB (e.g., 40.0 dB -> 400)
 FREQ_CORRECTION = 0
-AGC_MODE = 0
+AGC_MODE = 1
 DIRECT_SAMPLING = 0
 GAIN_MODE = 0
 
 # Pygame setup
-WIDTH, HEIGHT = 1024, 600
+WIDTH, HEIGHT = 400, 400
 FPS = 30
 
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("RTL-TCP IQ Data Visualization")
 clock = pygame.time.Clock()
+
+# Queue for incoming IQ data
+data_queue = asyncio.Queue(maxsize=1)
 
 # Waterfall configuration
 waterfall_height = 200
@@ -44,6 +51,29 @@ async def send_command(writer, cmd_id, param):
     command = struct.pack(">BI", cmd_id, param)
     writer.write(command)
     await writer.drain()
+
+# Function to convert raw IQ data to normalized complex signal
+def process_iq_data(iq_data):
+    iq_data = np.frombuffer(iq_data, dtype=np.uint8).astype(np.float32)
+    iq_data = (iq_data - 127.5) / 127.5  # Normalize to range [-1, 1]
+    real = iq_data[0::2]
+    imag = iq_data[1::2]
+    return real + 1j * imag  # Return complex signal
+
+# Function to perform FFT on a subset of the signal
+def compute_fft(complex_signal, sample_rate, frame_size=FRAME_SIZE):
+    
+    if len(complex_signal) < frame_size:
+        return None, None
+
+    sampled_signal = complex_signal[:frame_size]
+    window = scipy.signal.get_window("hann", frame_size)
+    windowed_signal = sampled_signal * window
+    fft_data = np.fft.fftshift(np.fft.fft(windowed_signal, n=frame_size))
+    fft_magnitude = np.abs(fft_data)
+    fft_magnitude_db = 20 * np.log10(fft_magnitude + 1e-6)  # Convert to dB
+    freqs = np.fft.fftshift(np.fft.fftfreq(frame_size, d=1 / sample_rate))
+    return freqs, fft_magnitude_db
 
 # Function to format frequency
 def format_frequency(freq):
@@ -75,25 +105,11 @@ def draw_waterfall(surface, waterfall_buffer):
 
 # Function to process IQ data, compute FFT, and draw it
 def draw_panadapter(screen, iq_data):
-    iq_data = np.frombuffer(iq_data, dtype=np.uint8).astype(np.float32)
-    iq_data = (iq_data - 127.5) / 127.5  # Normalize to range [-1, 1]
-
-    real = iq_data[0::2]
-    imag = iq_data[1::2]
-    complex_signal = real + 1j * imag
-
-    # Perform FFT
-    fft_data = np.fft.fftshift(np.fft.fft(complex_signal))
-    fft_magnitude = np.abs(fft_data)
-    fft_magnitude_db = 20 * np.log10(fft_magnitude + 1e-6)  # Convert to dB
-
-    # Apply smoothing to FFT magnitude
-    fft_magnitude_db = smooth_fft(fft_magnitude_db, alpha=0.2)
-
-    # Define frequency axis (centered at 0 Hz)
+    
+    complex_signal = process_iq_data(iq_data)
+    freqs, fft_magnitude_db = compute_fft(complex_signal, SAMPLE_RATE)
+    fft_magnitude_db = smooth_fft(fft_magnitude_db, alpha=0.1)
     freqs = np.fft.fftshift(np.fft.fftfreq(len(complex_signal), d=1/SAMPLE_RATE))
-
-    # Find center frequency magnitude
     center_idx = len(freqs) // 2
     center_db = fft_magnitude_db[center_idx]
 
@@ -117,8 +133,8 @@ def draw_panadapter(screen, iq_data):
     fft_magnitude_scaled = ((fft_magnitude_clipped - min_magnitude) / (max_magnitude - min_magnitude) * 255).astype(np.uint8)
 
     # Update and draw waterfall
-    #update_waterfall(waterfall_buffer, fft_magnitude_scaled)
-    #draw_waterfall(waterfall_surface, waterfall_buffer)
+    update_waterfall(waterfall_buffer, fft_magnitude_scaled)
+    draw_waterfall(waterfall_surface, waterfall_buffer)
 
     # Draw FFT data
     fft_magnitude_scaled_display = (fft_magnitude_clipped - min_magnitude) / (max_magnitude - min_magnitude) * fft_graph_height
@@ -133,6 +149,42 @@ def draw_panadapter(screen, iq_data):
 
     pygame.display.flip()
 
+# Async task to receive data from the server
+async def receive_data(reader, queue):
+    try:
+        buffer = b""
+        while True:
+            data = await reader.read(BUFFER_SIZE)
+            if not data:
+                print("Connection closed by server.")
+                break
+            buffer += data
+
+            while len(buffer) >= BUFFER_SIZE:
+                iq_data = buffer[:BUFFER_SIZE]
+                buffer = buffer[BUFFER_SIZE:]
+                if queue.full():
+                    await queue.get()  
+                await queue.put(iq_data)
+    except asyncio.CancelledError:
+        print("Data receiving cancelled.")
+    except Exception as e:
+        print(f"Error in receive_data: {e}")
+        
+# Async function to process and visualize data
+async def process_data(queue):
+    try:
+        while True:
+            if not queue.empty():
+                iq_data = await queue.get()
+                draw_panadapter(screen, iq_data)
+            else:
+                await asyncio.sleep(0.01)  
+            clock.tick(FPS)
+    except Exception as e:
+        print(f"Error in process_data: {e}")
+
+
 # Main function to connect and receive data
 async def main():
     try:
@@ -145,36 +197,22 @@ async def main():
         await send_command(writer, CMD_SET_AGC_MODE, AGC_MODE)
         await send_command(writer, CMD_SET_DIRECT_SAMPLING, DIRECT_SAMPLING)
         await send_command(writer, CMD_SET_GAIN_MODE, GAIN_MODE)
-        await send_command(writer, CMD_SET_GAIN, GAIN)
+        #await send_command(writer, CMD_SET_GAIN, GAIN)
 
         print("Commands sent to server. Receiving IQ data...")
+        
+        
 
-        running = True
-        buffer = b""
+         # Run receiver and processor concurrently
+        await asyncio.gather(
+            receive_data(reader, data_queue),
+            process_data(data_queue),
+        )
 
-        while running:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
 
-            # Read data from the server
-            data = await reader.read(1024 * 1024)  # Adjust buffer size as needed
-            if not data:
-                break
-            buffer += data
-
-            # Process data if we have a full frame (e.g., 512 bytes per frame)
-            frame_size = 6000
-            while len(buffer) >= frame_size:
-                iq_data = buffer[:frame_size]
-                buffer = buffer[frame_size:]
-
-                draw_panadapter(screen, iq_data)
-
-            clock.tick(FPS)
 
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"Error in main: {e}")
 
     finally:
         pygame.quit()
